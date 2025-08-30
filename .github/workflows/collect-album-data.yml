@@ -21,10 +21,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r scripts/requirements.txt
 
+      - name: Parse issue form data
+        id: parse
+        run: |
+          # Extract artist and album from issue body
+          ARTIST=$(echo '${{ github.event.issue.body }}' | grep -A1 "### Artist Name" | tail -1 | xargs)
+          ALBUM=$(echo '${{ github.event.issue.body }}' | grep -A1 "### Album Name" | tail -1 | xargs)
+          echo "ARTIST_NAME=$ARTIST" >> $GITHUB_OUTPUT
+          echo "ALBUM_NAME=$ALBUM" >> $GITHUB_OUTPUT
+
       - name: Run album data collection script
         env:
-          ARTIST_NAME: ${{ github.event.issue.title }}
-          ALBUM_NAME: ${{ github.event.issue.body }}
+          ARTIST_NAME: ${{ steps.parse.outputs.ARTIST_NAME }}
+          ALBUM_NAME: ${{ steps.parse.outputs.ALBUM_NAME }}
           SPOTIFY_API_KEY: ${{ secrets.SPOTIFY_API_KEY }}
         run: |
           python scripts/find_album.py "$ARTIST_NAME" "$ALBUM_NAME"
