@@ -3,7 +3,7 @@ name: Collect Album Data
 on:
   issues:
     types: [opened]
-    
+
 permissions:
   contents: write
   issues: read
@@ -31,8 +31,8 @@ jobs:
         id: parse
         run: |
           # Extract artist and album from issue body
-          ARTIST=$(echo '${{ github.event.issue.body }}' | grep -A1 "### Artist Name" | tail -1 | xargs)
-          ALBUM=$(echo '${{ github.event.issue.body }}' | grep -A1 "### Album Name" | tail -1 | xargs)
+          ARTIST=$(echo '${{ github.event.issue.body }}' | grep -A2 "### Artist Name" | tail -1 | xargs)
+          ALBUM=$(echo '${{ github.event.issue.body }}' | grep -A2 "### Album Name" | tail -1 | xargs)
           echo "ARTIST_NAME=$ARTIST" >> $GITHUB_OUTPUT
           echo "ALBUM_NAME=$ALBUM" >> $GITHUB_OUTPUT
 
