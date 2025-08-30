@@ -1,0 +1,25 @@
+name: Album Request
+
+description: Use this template to request an album. Please provide the artist and album name.
+
+title: Album Request for {{ artist }} - {{ album }}
+
+body:
+  - type: input
+    id: artist
+    attributes:
+      label: Artist Name
+      placeholder: Enter the artist's name
+    validations:
+      required: true
+
+  - type: input
+    id: album
+    attributes:
+      label: Album Name
+      placeholder: Enter the album's name
+    validations:
+      required: true
+
+labels: 
+  - album-request

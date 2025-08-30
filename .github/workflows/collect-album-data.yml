@@ -1,0 +1,37 @@
+name: Collect Album Data
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  collect-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r scripts/requirements.txt
+
+      - name: Run album data collection script
+        env:
+          ARTIST_NAME: ${{ github.event.issue.title }}
+          ALBUM_NAME: ${{ github.event.issue.body }}
+        run: |
+          python scripts/find_album_data.py "$ARTIST_NAME" "$ALBUM_NAME"
+
+      - name: Commit album data
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/albums.json
+          git commit -m "Add album data for $ARTIST_NAME - $ALBUM_NAME"
+          git push
