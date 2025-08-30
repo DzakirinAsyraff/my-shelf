@@ -27,7 +27,7 @@ jobs:
           ALBUM_NAME: ${{ github.event.issue.body }}
           SPOTIFY_API_KEY: ${{ secrets.SPOTIFY_API_KEY }}
         run: |
-          python scripts/find_album_data.py "$ARTIST_NAME" "$ALBUM_NAME"
+          python scripts/find_album.py "$ARTIST_NAME" "$ALBUM_NAME"
 
       - name: Commit album data
         run: |
