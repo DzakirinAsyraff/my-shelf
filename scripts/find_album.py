@@ -73,6 +73,8 @@ def update_album_data(artist, album, year, cover):
         "cover": cover
     }
     
+    os.makedirs('data', exist_ok=True)
+    
     try:
         with open('data/albums.json', 'r') as f:
             albums = json.load(f)
