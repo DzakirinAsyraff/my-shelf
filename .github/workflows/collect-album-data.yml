@@ -3,6 +3,10 @@ name: Collect Album Data
 on:
   issues:
     types: [opened]
+    
+permissions:
+  contents: write
+  issues: read
 
 jobs:
   collect-data:
@@ -46,7 +50,7 @@ jobs:
           git config --local user.name "GitHub Action"
           if [ -f data/albums.json ]; then
             git add data/albums.json
-            git commit -m "Add album data for $ARTIST_NAME - $ALBUM_NAME"
+            git commit -m "Add album data for ${{ steps.parse.outputs.ARTIST_NAME }} - ${{ steps.parse.outputs.ALBUM_NAME }}"
             git push
           else
             echo "No album data file was created"
