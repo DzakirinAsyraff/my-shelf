@@ -33,6 +33,10 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add data/albums.json
-          git commit -m "Add album data for $ARTIST_NAME - $ALBUM_NAME"
-          git push
+          if [ -f data/albums.json ]; then
+            git add data/albums.json
+            git commit -m "Add album data for $ARTIST_NAME - $ALBUM_NAME"
+            git push
+          else
+            echo "No album data file was created"
+          fi
