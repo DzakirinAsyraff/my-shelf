@@ -1,20 +1,68 @@
 import json
 import requests
 import sys
+import os
+import base64
+
+def get_spotify_token():
+    """Get Spotify access token using client credentials flow"""
+    api_key = os.getenv('SPOTIFY_API_KEY')
+    if not api_key:
+        print("Error: SPOTIFY_API_KEY environment variable not set")
+        return None
+    
+    # Assuming API_KEY contains client_id:client_secret
+    auth_header = base64.b64encode(api_key.encode()).decode()
+    
+    headers = {
+        'Authorization': f'Basic {auth_header}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    
+    data = {'grant_type': 'client_credentials'}
+    
+    response = requests.post('https://accounts.spotify.com/api/token', headers=headers, data=data)
+    
+    if response.status_code == 200:
+        return response.json().get('access_token')
+    else:
+        print(f"Error getting Spotify token: {response.status_code}")
+        return None
 
 def find_album_data(artist, album):
-    # Replace with an actual API endpoint or database query
-    api_url = f"https://api.example.com/albums?artist={artist}&album={album}"
+    """Find album data using Spotify API"""
+    token = get_spotify_token()
+    if not token:
+        return None, None
     
-    response = requests.get(api_url)
+    headers = {
+        'Authorization': f'Bearer {token}'
+    }
+    
+    # Search for the album
+    search_url = "https://api.spotify.com/v1/search"
+    params = {
+        'q': f'artist:{artist} album:{album}',
+        'type': 'album',
+        'limit': 1
+    }
+    
+    response = requests.get(search_url, headers=headers, params=params)
     
     if response.status_code == 200:
         data = response.json()
-        album_year = data.get('year')
-        album_cover = data.get('cover')
-        return album_year, album_cover
+        albums = data.get('albums', {}).get('items', [])
+        
+        if albums:
+            album_info = albums[0]
+            year = album_info.get('release_date', '').split('-')[0]  # Extract year from date
+            cover = album_info.get('images', [{}])[0].get('url', '') if album_info.get('images') else ''
+            return year, cover
+        else:
+            print(f"No album found for {artist} - {album}")
+            return None, None
     else:
-        print(f"Error fetching data: {response.status_code}")
+        print(f"Error fetching data from Spotify: {response.status_code}")
         return None, None
 
 def update_album_data(artist, album, year, cover):

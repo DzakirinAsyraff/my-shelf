@@ -25,6 +25,7 @@ jobs:
         env:
           ARTIST_NAME: ${{ github.event.issue.title }}
           ALBUM_NAME: ${{ github.event.issue.body }}
+          SPOTIFY_API_KEY: ${{ secrets.SPOTIFY_API_KEY }}
         run: |
           python scripts/find_album_data.py "$ARTIST_NAME" "$ALBUM_NAME"
 
